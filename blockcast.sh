@@ -4,8 +4,9 @@
 RED='\033[0;31m'         # Error
 YELLOW='\033[0;33m'       # Warning
 DEEP_GREEN='\033[0;32m'   # Success
-HGREEN='\033[0;36m' # Runtime/Info (using a shade of cyan for "hacker green")
+HGREEN='\033[0;36m'      # Runtime/Info (using a shade of cyan for "hacker green")
 NC='\033[0m'             # No Color
+BOLD='\033[1m'           # Bold text
 
 # --- Variables ---
 DOCKER_COMPOSE_FILE="docker-compose.yaml"
@@ -13,19 +14,25 @@ DOCKER_COMPOSE_FILE="docker-compose.yaml"
 # --- Functions ---
 
 MrXintro() {
+    clear 
     echo ""
 
-    echo -e "${BOLD}${HGREEN}"    
+    echo -e "${BOLD}${HGREEN}"
     echo "███╗   ███╗██████╗        ██╗  ██╗"
     echo "████╗ ████║██╔══██╗       ╚██╗██╔╝"
     echo "██╔████╔██║██████╔╝        ╚███╔╝ "
     echo "██║╚██╔╝██║██╔══██╗        ██╔██╗ "
     echo "██║ ╚═╝ ██║██║  ██║██╗    ██╔╝ ██╗"
     echo "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝    ╚═╝  ╚═╝"
-                                  
+
     echo "                 Github: http://github.com/iamxlord"
     echo -e "                 Twitter: http://x.com/iamxlord${NC}"
     echo ""
+    echo -e "${HGREEN}Welcome to the Blockcast Node Manager!${NC}"
+    echo -e "${HGREEN}This script will help you set up and manage your Blockcast node.${NC}"
+    echo -e "${HGREEN}Press any key to continue...${NC}"
+    read -n 1 -s # Wait for any key press (silent, single character)
+    echo "" # Add a newline after the key press
 }
 
 # check_sudo_privileges: Checks for sudo access
@@ -44,12 +51,15 @@ check_docker_installed() {
         echo -e "${YELLOW}Docker is not installed.${NC}"
         install_docker
     else
-        if ! sudo docker run hello-world &> /dev/null; then
-            echo -e "${YELLOW}Docker is installed but not configured correctly or user is not in 'docker' group.${NC}"
-            echo -e "${YELLOW}Attempting to add current user to 'docker' group and re-test...${NC}"
+        # Test if Docker commands can be run without sudo
+        if ! docker run hello-world &> /dev/null; then
+            echo -e "${YELLOW}Docker is installed but your user isn't in the 'docker' group or Docker isn't running.${NC}"
+            echo -e "${YELLOW}Attempting to add current user to the 'docker' group...${NC}"
             sudo usermod -aG docker "$USER"
-            echo -e "${YELLOW}Please log out and log back in for group changes to take effect, then re-run the script.${NC}"
-            exit 1
+
+            echo -e "${YELLOW}IMPORTANT: To apply the group changes, you need to log out and log back into your terminal session.${NC}"
+            echo -e "${YELLOW}After logging back in, please re-run this script.${NC}"
+            exit 1 # Exit, as the user needs to re-login
         fi
         echo -e "${DEEP_GREEN}Docker is installed and running correctly!${NC}"
     fi
@@ -72,9 +82,10 @@ install_docker() {
 
     if [ $? -eq 0 ]; then
         echo -e "${DEEP_GREEN}Docker installed successfully!${NC}"
-        echo -e "${DEEP_GREEN}Adding current user to 'docker' group for seamless operation...${NC}"
+        echo -e "${DEEP_GREEN}Adding current user to the 'docker' group for seamless operation...${NC}"
         sudo usermod -aG docker "$USER"
-        echo -e "${YELLOW}Please log out and log back in for group changes to take effect, then re-run the script.${NC}"
+        echo -e "${YELLOW}IMPORTANT: To apply the group changes, you need to log out and log back into your terminal session.${NC}"
+        echo -e "${YELLOW}After logging back in, please re-run this script.${NC}"
         exit 0 # Exit, as the user needs to re-login
     else
         echo -e "${RED}Failed to install Docker.${NC}"
@@ -86,7 +97,7 @@ install_docker() {
 # start_blockcast_containers: Starts Blockcast containers using docker compose
 start_blockcast_containers() {
     echo -e "${HGREEN}BOOTING ${RED}✘${NC}.... ${NC}"
-    echo -e "${HGREEN}starting Blockcast Node ${RED}✘${NC}"
+    echo -e "${HGREEN}Starting Blockcast Node ${RED}✘${NC}"
     sudo docker compose -f "$DOCKER_COMPOSE_FILE" up -d
 
     if [ $? -ne 0 ]; then
@@ -119,7 +130,7 @@ start_blockcast_containers() {
 
 # --- Main Script Execution ---
 
-MrXintro             # Call the custom introduction
-check_sudo_privileges # Check for sudo rights
-check_docker_installed # Check and potentially install Docker
-start_blockcast_containers # Start the Blockcast containers
+MrXintro                      # Call the custom introduction
+check_sudo_privileges         # Check for sudo rights
+check_docker_installed        # Check and potentially install Docker
+start_blockcast_containers    # Start the Blockcast containers
