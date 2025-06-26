@@ -4,7 +4,7 @@
 RED='\033[0;31m'         # Error
 YELLOW='\033[0;33m'       # Warning
 DEEP_GREEN='\033[0;32m'   # Success
-HGREEN='\033[0;36m'      # Runtime/Info (using a shade of cyan for "hacker green")
+HGREEN='\033[0;36m'      # Runtime/Info
 NC='\033[0m'             # No Color
 BOLD='\033[1m'           # Bold text
 
