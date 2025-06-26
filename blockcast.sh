@@ -13,6 +13,18 @@ DOCKER_COMPOSE_FILE="docker-compose.yaml"
 
 # --- Functions ---
 
+# type_text: Simulates typing out text
+type_text() {
+    local text="$1"
+    local delay="${2:-0.05}" # Default delay 0.05 seconds
+
+    for (( i=0; i<${#text}; i++ )); do
+        echo -n "${text:$i:1}"
+        sleep "$delay"
+    done
+    echo "" # Newline after typing
+}
+
 MrXintro() {
     clear 
     echo ""
@@ -28,9 +40,15 @@ MrXintro() {
     echo "                 Github: http://github.com/iamxlord"
     echo -e "                 Twitter: http://x.com/iamxlord${NC}"
     echo ""
-    echo -e "${HGREEN}Welcome to the Blockcast Node Manager!${NC}"
-    echo -e "${HGREEN}This script will help you set up and manage your Blockcast node.${NC}"
-    echo -e "${HGREEN}Press any key to continue...${NC}"
+    sleep 1
+    # Typing animation for intro text
+    echo -e "${HGREEN}"
+    type_text "Welcome to the Blockcast Node Manager!" 0.04
+    type_text "This script will help you set up and manage your Blockcast node." 0.04
+    echo ""
+    type_text "Press any key to continue..." 0.03
+    echo -e "${NC}"
+
     read -n 1 -s # Wait for any key press (silent, single character)
     echo "" # Add a newline after the key press
 }
